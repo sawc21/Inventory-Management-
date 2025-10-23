@@ -31,18 +31,55 @@ The system follows a layered architecture for clarity and scalability.
 ```mermaid
 
 classDiagram
+direction LR
 
-&nbsp; class Item { String id; String name; int quantity; double price }
+class Item {
+  +id: String
+  +name: String
+  +quantity: int
+  +price: double
+  +supplierId: String
+}
 
-&nbsp; class InventoryRepository { +save(Item); +delete(String); +findAll() }
+class Supplier {
+  +id: String
+  +name: String
+  +contact: String
+}
 
-&nbsp; class InventoryService { +addItem(Item); +adjustStock(String, int) }
+class StockMovement {
+  +itemId: String
+  +delta: int
+  +timestamp: Instant
+  +type: MovementType
+}
 
-&nbsp; class RealTimeStockUpdater
+class LowStockPolicy {
+  <<interface>>
+  +isLow(Item): boolean
+}
 
-&nbsp; InventoryService --> InventoryRepository
+class InventoryRepository {
+  <<interface>>
+  +add(Item)
+  +update(Item)
+  +delete(id: String)
+  +findById(id: String): Item
+  +findAll(): List~Item~
+}
 
-&nbsp; RealTimeStockUpdater --> InventoryService
+class InMemoryInventoryRepository
+class FileInventoryRepository
+class InventoryService {
+  +addItem(Item)
+  +adjustStock(id: String, delta: int)
+  +findLowStock(): List~Item~
+}
 
+Item --> Supplier : supplierId
+InventoryRepository <|.. InMemoryInventoryRepository
+InventoryRepository <|.. FileInventoryRepository
+InventoryService --> InventoryRepository : uses
+LowStockPolicy <|.. DefaultLowStockPolicy
 
 
