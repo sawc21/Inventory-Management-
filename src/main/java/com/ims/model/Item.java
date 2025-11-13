@@ -25,6 +25,27 @@ public record Item(
             throw new IllegalArgumentException("price cannot be negative");
     }
 
+    // ---- Getters ----
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public String getSupplier() {
+        return supplier;
+    }
+
     /**
      * Convenience for stock change. Positive to add, negative to deduct. Could
      * possibly combine next two functions, I jsut thought it would be nice to have
@@ -42,5 +63,31 @@ public record Item(
         Double np = newPrice != null ? newPrice : this.price;
         String ns = newSupplier != null ? newSupplier : this.supplier;
         return new Item(this.id, nn, this.quantity, np, ns);
+    }
+
+    public Item withQuantity(int newQuantity) {
+        return new Item(id, name, newQuantity, price, supplier);
+    }
+
+    // equality and debugging
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Item))
+            return false;
+        Item item = (Item) o;
+        return Objects.equals(id, item.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Item{id='%s', name='%s', qty=%d, price=%s, supplier='%s'}",
+                id, name, quantity, price, supplier);
     }
 }
