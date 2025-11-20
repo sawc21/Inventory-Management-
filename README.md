@@ -1,7 +1,7 @@
 # Inventory Management System (Java, Maven Daemon)
 
 ***************************************
-*******RUN WITH : mvnd exec:java*******
+*******RUN WITH : mvn exec:java "-Dexec.mainClass=com.ims.app.Main"*******
 ***************************************
 
 ## Overview
@@ -17,11 +17,36 @@ The project uses:
 - A pluggable `LowStockPolicy`
 - A `StockMovement` model that drives concurrent real time updates
 
+## Setup
+1. Download at least jdk version 17 from oracle.com
+2. Download maven from maven.apache.org
+3. Next, you need to add the path variables for execution. To do that, go to Start -> search for
+"edit the system environment variables" and hit enter -> in the dialog that pops up,
+click the button that reads, "Environment Variables..." -> click on "Path" under user
+variables and click "Edit" -> click new and locate and paste the java bin directory in
+(should look something like C:\Program Files\Java\jdk-24\bin) -> click new again ->
+paste the path of the maven bin directory
+(e.g. C:\maven-mvnd-1.0.3-windows-amd64\maven-mvnd-1.0.3-windows-amd64\bin) -> click ok
+-> click ok again
+4. Maven should now be configured so that windows knows where to find it.
+
+## Running the Application
+1. Clone the GitHub repository by saving it locally to your computer as a .zip file
+2. Extract the zip file and open the extracted folder
+3. Open the folder titled "Inventory-Management--main"
+4. Now, hold shift + right-click anywhere not on a file. A dropdown should appear.
+5. Click the option that says "Open PowerShell window here"
+6. Type in this command to run the application(include parantheses)
+mvn exec:java "-Dexec.mainClass=com.ims.app.Main"
+7. The application should display the inventory items as a list and their properties.
+Additionally, it displays the items that need to be restocked.
+
 This README reflects the current state of the project and the next planned steps.
 
 ---
 
 ## Current Status
+-Implemented add/remove item functionality
 
 ###  Domain Models 
 
