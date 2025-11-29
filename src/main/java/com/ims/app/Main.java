@@ -10,7 +10,13 @@ import java.util.*;
 
 
 public class Main {
-    public static void main(String[] args) {
+	//variable initialization to use across scopes
+	static String id, name, supplier;
+	static double price;
+	static int quantity, count;
+	static boolean loopRunning = true;
+	
+    public static void main(String[] args) throws InputMismatchException, InterruptedException {
 
 
         // Temporary stub repository
@@ -85,9 +91,8 @@ public class Main {
 
         Scanner scnr = new Scanner(System.in);
 
-
+        //continuously loop until user decides to exit
         while (true) {
-
 
             System.out.println("\n==== Inventory Menu ====");
             System.out.println("1. Add Item");
@@ -103,8 +108,7 @@ public class Main {
 
 
             switch (choice) {
-
-
+            
                 case "1": {
                     // Add Item
                     System.out.println("\n-- Add Item --");
@@ -117,25 +121,53 @@ public class Main {
                     System.out.print("Enter Name: ");
                     String name = scnr.nextLine();
 
+                    //keeps asking for integer value until user provides one
+                    while (loopRunning) {
+                    	//error handling for different data types
+                    	try {
+                    		System.out.print("Enter Quantity: ");
+                    		quantity = scnr.nextInt();
+                    		scnr.nextLine(); //flush newline from scanner, prevents skipping input
+                    		loopRunning = false; // end of continuous prompting if success
+                    		//catch newline character
+                    		scnr.nextLine();
+                    	}
+                    	catch (InputMismatchException e) {
+                    		System.out.println("Quantity must be an integer value. Please try again.");
+                    		scnr.nextLine(); // clears bad token and new line character
+                    	}
+                    }
+                    
+                    //resets loop running back to true for use in price loop
+                    loopRunning = true;
 
-                    System.out.print("Enter Quantity: ");
-                    //parse convert types String -> Int
-                    int qty = Integer.parseInt(scnr.nextLine());
-
-
-                    System.out.print("Enter Price: ");
-                    double price = Double.parseDouble(scnr.nextLine());
+                    //keeps asking for double value until user provides one
+                    while (loopRunning) {
+                    	//error handling for different data types
+                    	try {
+                    		System.out.print("Enter Price: ");
+                    		price = scnr.nextDouble();
+                    		loopRunning = false;
+                    		//catch newline character
+                    		scnr.nextLine();
+                    	}
+                    	catch (InputMismatchException e) {
+                    		System.out.println("Price must be a double value. Please try again.");
+                    		scnr.nextLine(); // clears bad token and new line character
+                    	}
+                    }
 
 
                     System.out.print("Enter Supplier: ");
                     String supplier = scnr.nextLine();
 
 
-                    Item newItem = new Item(id, name, qty, price, supplier);
+                    Item newItem = new Item(id, name, quantity, price, supplier);
 
 
                     repo.save(newItem);  
                     System.out.println("Item saved!");
+                    Thread.sleep(2000);
                     break;
                 }
 
@@ -149,6 +181,7 @@ public class Main {
                     } else {
                         items.forEach(System.out::println);
                     }
+                    Thread.sleep(1000);
                     break;
                 }
 
@@ -176,13 +209,13 @@ public class Main {
                     System.out.print("Enter ID to delete: ");
                     String delId = scnr.nextLine();
 
-
                     if (repo.existsById(delId)) {
                         repo.deleteById(delId);
                         System.out.println("Item deleted!");
                     } else {
                         System.out.println("No item with that ID exists.");
                     }
+                    Thread.sleep(1000);
                     break;
                 }
 
@@ -191,7 +224,20 @@ public class Main {
                     // Replace Entire Inventory
                     System.out.println("\n-- Replace All Items --");
                     System.out.println("How many items do you want to add?");
-                    int count = Integer.parseInt(scnr.nextLine());
+                    
+                    //keep prompting user to enter an integer, otherwise display error
+                    while (loopRunning) {
+                    	try {
+                    		count = scnr.nextInt();
+                    		scnr.nextLine(); //catch newline character
+                    		loopRunning = false; // end of loop if success and no errors
+                    	}
+                    	catch (InputMismatchException e) {
+                    		System.out.println("Item count must be an integer value. Please try again.");
+                    		scnr.nextLine(); /* clears bad token and new line character, prevents
+                    		error overflow */
+                    	}
+                    }
 
 
                     List<Item> newList = new ArrayList<>();
@@ -207,21 +253,47 @@ public class Main {
 
                         System.out.print("Enter Name: ");
                         String name = scnr.nextLine();
+                        
+                      //keeps asking for integer value until user provides one
+                        while (loopRunning) {
+                        	//error handling for different data types
+                        	try {
+                        		System.out.print("Enter Quantity: ");
+                        		quantity = scnr.nextInt();
+                        		loopRunning = false;
+                        		//catch newline character
+                        		scnr.nextLine();
+                        	}
+                        	catch (InputMismatchException e) {
+                        		System.out.println("Quantity must be an integer value. Please try again.");
+                        		scnr.nextLine(); // clears bad token and new line character
+                        	}
+                        }
+                        
+                        //resets loop running back to true for use in price loop
+                        loopRunning = true;
 
-
-                        System.out.print("Enter Quantity: ");
-                        int qty = Integer.parseInt(scnr.nextLine());
-
-
-                        System.out.print("Enter Price: ");
-                        double price = Double.parseDouble(scnr.nextLine());
-
-
+                        //keeps asking for double value until user provides one
+                        while (loopRunning) {
+                        	//error handling for different data types
+                        	try {
+                        		System.out.print("Enter Price: ");
+                        		price = scnr.nextDouble();
+                        		loopRunning = false;
+                        		//catch newline character
+                        		scnr.nextLine();
+                        	}
+                        	catch (InputMismatchException e) {
+                        		System.out.println("Price must be a double value. Please try again.");
+                        		scnr.nextLine(); // clears bad token and new line character
+                        	}
+                        }
+                        
                         System.out.print("Enter Supplier: ");
-                        String supplier = scnr.nextLine();
+                        supplier = scnr.nextLine();
 
 
-                        newList.add(new Item(id, name, qty, price, supplier));
+                        newList.add(new Item(id, name, quantity, price, supplier));
                     }
 
 
@@ -238,6 +310,7 @@ public class Main {
 
                 default:
                     System.out.println("Invalid option — try again.");
+                    Thread.sleep(1000);
                     break;
             }  
         }
