@@ -100,7 +100,9 @@ public class Main {
             System.out.println("3. Search Item by ID");
             System.out.println("4. Delete Item");
             System.out.println("5. Replace All Items");
-            System.out.println("6. Exit");
+			System.out.println("6. Load Inventory");
+			System.out.println("7. Save Inventory");
+            System.out.println("8. Exit");
             System.out.print("Choose an option: ");
 
 
@@ -301,8 +303,16 @@ public class Main {
                     System.out.println("Inventory replaced successfully!");
                     break;
                 }
+				//load an existing inventory file
+				case 6:
+					
+					break;
+				//save inventory to a file
+				case 7:
+					
+					break;
                 // exit program
-                case "6":
+                case "8":
                     System.out.println("Goodbye!");
                     scnr.close();
                     return;
