@@ -15,31 +15,35 @@ public interface InventoryFileStorage {
 
 //class for loading and saving from/to csv file
 public class CsvInventoryStorage implements InventoryFileStorage {
-    public List<Item> loadAll(fileName) throws IOException {
-        File file = new File(fileName);
-        Scanner sc = new Scanner(file);
-
-        //loops to read the file
-        while (sc.hasNextLine()) {
-            String line = sc.nextLine();
-            String[] values = line.split(",");
-            System.out.println("ID" + values[0] + "Name" + values[1] + "Grade" + values[2]);
+    public List<Item> loadAll(String fileName) throws IOException {
+        //create a new empty list object
+        List<Item> items = new ArrayList<>();
+        //try-with-resources to auto-close the file when finished reading
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            while ((line = reader.readLine()) != null) {
+                //separates properties and add to list as new item
+                String[] properties = line.split(",");
+                Item item = new Item(properties[0], properties[1], properties[2], properties[3], properties[4]);
+                items.add(item);
+            }
         }
-        sc.close();
-    }
-    public void saveAll(List<Item> items) throws IOException {
-        for (int i = 0; i < items; i++) {
-            
+        catch (IOException e) {
+            e.printStackTrace();
         }
+        return items;
     }
-}
-
-//class for loading and saving from/to txt file
-public class TxtInventoryStorage implements InventoryFileStorage {
-    public List<Item> loadAll() throws IOException {
-        
-    }
-    public void saveAll(List<Item> items) throws IOException {
-        
+    public void saveAll(List<Item> items, fileName) throws IOException {
+        for (Item item : items) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+                for (Item item : items) {
+                    writer.write("ID, Name, Quantity, Price, Supplier\n");
+                    writer.write(item.getId() + "," + item.getName() + "," + item.getQuantity() + "," + item.getPrice() + "," + item.getSupplier());
+                    writer.newLine();
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
