@@ -3,9 +3,11 @@ package com.ims.app;
 
 import com.ims.model.Item;
 import com.ims.repository.InventoryRepository;
-import com.ims.io.InventoryFileStorage;
+import com.ims.io.CsvInventoryStorage;
 import com.ims.service.InventoryService;
 import com.ims.service.InventoryServiceImpl;
+
+import java.io.File;
 import java.util.*;
 
 
@@ -15,7 +17,6 @@ public class Main {
 	static double price;
 	static int quantity, count;
 	static boolean loopRunning = true;
-	CsvInventoryStorage file = new CsvInventoryStorage();
 	
     public static void main(String[] args) throws InputMismatchException, InterruptedException {
 
@@ -67,19 +68,19 @@ public class Main {
 
 
         // Temporary stub file storage
-        InventoryFileStorage storage = new InventoryFileStorage() {
+        CsvInventoryStorage storage = new CsvInventoryStorage(); /* {
             @Override
-            public java.util.List<Item> loadAll() {
+            public java.util.List<Item> loadAll(String fileName) {
                 System.out.println("[DEBUG] Loading items (stubbed)");
                 return java.util.List.of();
             }
 
 
             @Override
-            public void saveAll(java.util.List<Item> items) {
+            public void saveAll(java.util.List<Item> items, String fileName) {
                 System.out.println("[DEBUG] Saving " + items.size() + " items (stubbed)");
             }
-        };
+        }; */
 
 
         // Simple low-stock rule: quantity < 10
@@ -123,7 +124,10 @@ public class Main {
 
                     System.out.print("Enter Name: ");
                     String name = scnr.nextLine();
-
+                    
+                    //reset loopRunning variable
+                    loopRunning = true;
+                    
                     //keeps asking for integer value until user provides one
                     while (loopRunning) {
                     	//error handling for different data types
@@ -132,8 +136,6 @@ public class Main {
                     		quantity = scnr.nextInt();
                     		scnr.nextLine(); //flush newline from scanner, prevents skipping input
                     		loopRunning = false; // end of continuous prompting if success
-                    		//catch newline character
-                    		scnr.nextLine();
                     	}
                     	catch (InputMismatchException e) {
                     		System.out.println("Quantity must be an integer value. Please try again.");
@@ -314,11 +316,13 @@ public class Main {
 						System.out.println("Please enter the name of the file to load: ");
 						try {
 							String file_name = scnr.nextLine();
+							String full_path = "src/main/resources/" + file_name;
 
 							//file must be .csv in order to parsed
-							if (file_name.endsWith(".csv") {
+							if (file_name.endsWith(".csv")) {
 								//replace existing repository with items loaded from a file
-								repo.replaceAll(file.loadAll(file_name));
+								repo.replaceAll(storage.loadAll(full_path));
+								loopRunning = false;
 								System.out.println("Successfully loaded inventory: " + file_name);
 							}
 							else {
@@ -326,28 +330,33 @@ public class Main {
 							}
 						}
 						catch (Exception e) {
-							System.out.println("Invalid file name. Please try again.");
+							e.printStackTrace();
 						}
 					}
 					break;
 				//save inventory to a file
 				case "7":
-					System.out.println("Please enter the name of the file to save to: ");
-						try {
-							String file_name = scnr.nextLine();
+					loopRunning = true;
+					while (loopRunning) {
+						System.out.println("Please enter the name of the file to save to: ");
+							try {
+								String file_name = scnr.nextLine();
+								String full_path = "src/main/resources/" + file_name;
 
-							//file must be .csv in order to save to
-							if (file_name.endsWith(".csv") {
-								file.saveAll(repo, file_name);
-								System.out.println("Successfully saved inventory to file: " + file_name);
+								//file must be .csv in order to save to
+								if (file_name.endsWith(".csv")) {
+									storage.saveAll(repo.findAll(), full_path);
+									loopRunning = false;
+									System.out.println("Saving to: " + new File(full_path).getAbsolutePath());
+									System.out.println("Successfully saved inventory to file: " + file_name);
+								}
+								else {
+									throw new IllegalArgumentException("Invalid file type. File must be .csv format.");
+								}
 							}
-							else {
-								throw new IllegalArgumentException("Invalid file type. File must be .csv format.");
+							catch (Exception e) {
+								System.out.println("Invalid file name. Please try again.");
 							}
-						}
-						catch (Exception e) {
-							System.out.println("Invalid file name. Please try again.");
-						}
 					}
 					break;
                 // exit program
@@ -356,12 +365,11 @@ public class Main {
                     scnr.close();
                     return;
 
-
                 default:
                     System.out.println("Invalid option — try again.");
                     Thread.sleep(1000);
                     break;
-            }  
+            }
         }
     }
 }
