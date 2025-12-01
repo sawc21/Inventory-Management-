@@ -304,11 +304,11 @@ public class Main {
                     break;
                 }
 				//load an existing inventory file
-				case 6:
+				case "6":
 					
 					break;
 				//save inventory to a file
-				case 7:
+				case "7":
 					
 					break;
                 // exit program
