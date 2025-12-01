@@ -186,6 +186,8 @@ public class Main {
                     } else {
                         items.forEach(System.out::println);
                     }
+					System.out.println("\n-- Low Stock --");
+					System.out.println(service.lowStock());
                     Thread.sleep(1000);
                     break;
                 }
