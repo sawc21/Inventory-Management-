@@ -15,6 +15,7 @@ public class Main {
 	static double price;
 	static int quantity, count;
 	static boolean loopRunning = true;
+	CsvInventoryStorage file = new CsvInventoryStorage();
 	
     public static void main(String[] args) throws InputMismatchException, InterruptedException {
 
@@ -305,11 +306,49 @@ public class Main {
                 }
 				//load an existing inventory file
 				case "6":
-					
+					//reset loop running variable
+					loopRunning = true;
+
+					//loop until valid file name is read
+					while (loopRunning) {
+						System.out.println("Please enter the name of the file to load: ");
+						try {
+							String file_name = scnr.nextLine();
+
+							//file must be .csv in order to parsed
+							if (file_name.endsWith(".csv") {
+								//replace existing repository with items loaded from a file
+								repo.replaceAll(file.loadAll(file_name));
+								System.out.println("Successfully loaded inventory: " + file_name);
+							}
+							else {
+								throw new IllegalArgumentException("Invalid file type. File must be .csv format.");
+							}
+						}
+						catch (Exception e) {
+							System.out.println("Invalid file name. Please try again.");
+						}
+					}
 					break;
 				//save inventory to a file
 				case "7":
-					
+					System.out.println("Please enter the name of the file to save to: ");
+						try {
+							String file_name = scnr.nextLine();
+
+							//file must be .csv in order to save to
+							if (file_name.endsWith(".csv") {
+								file.saveAll(repo, file_name);
+								System.out.println("Successfully saved inventory to file: " + file_name);
+							}
+							else {
+								throw new IllegalArgumentException("Invalid file type. File must be .csv format.");
+							}
+						}
+						catch (Exception e) {
+							System.out.println("Invalid file name. Please try again.");
+						}
+					}
 					break;
                 // exit program
                 case "8":
