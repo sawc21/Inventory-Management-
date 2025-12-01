@@ -43,9 +43,9 @@ public interface InventoryService {
     List<Item> lowStock();
 
     // Persistence
-    Result<Void> saveAll() throws IOException;
+    Result<Void> saveAll(List<Item> items, String fileName) throws IOException;
 
-    Result<Void> loadAll() throws IOException;
+    Result<Void> loadAll(String fileName) throws IOException;
 
     /**
      * Encapsulates low-stock threshold logic so it can be swapped in tests.

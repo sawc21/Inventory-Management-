@@ -3,7 +3,7 @@ package com.ims.service;
 import com.ims.model.Item;
 import com.ims.model.StockMovement;
 import com.ims.repository.InventoryRepository;
-import com.ims.io.InventoryFileStorage;
+import com.ims.io.CsvInventoryStorage;
 
 import java.io.IOException;
 import java.util.*;
@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 public class InventoryServiceImpl implements InventoryService {
 
     private final InventoryRepository repo;
-    private final InventoryFileStorage storage;
+    private final CsvInventoryStorage storage;
     private final LowStockPolicy lowStockPolicy;
 
     public InventoryServiceImpl(InventoryRepository repo,
-            InventoryFileStorage storage,
+            CsvInventoryStorage storage,
             LowStockPolicy lowStockPolicy) {
         this.repo = Objects.requireNonNull(repo, "repo");
         this.storage = Objects.requireNonNull(storage, "storage");
@@ -134,20 +134,6 @@ public class InventoryServiceImpl implements InventoryService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public Result<Void> saveAll() throws IOException {
-        storage.saveAll(repo.findAll());
-        return Result.ok();
-    }
-
-    @Override
-    public Result<Void> loadAll() throws IOException {
-        List<Item> items = storage.loadAll();
-        // Replace current contents with loaded snapshot
-        repo.replaceAll(items);
-        return Result.ok();
-    }
-
     // ---------- Validation ----------
 
     private Result<Void> validateItemForCreate(Item item) {
@@ -204,4 +190,18 @@ public class InventoryServiceImpl implements InventoryService {
                 src.getPrice(),
                 src.getSupplier());
     }
+
+    @Override
+    public Result<Void> saveAll(List<Item> items, String fileName) throws IOException {
+        storage.saveAll(items, fileName);
+        return Result.ok();
+    }
+
+	@Override
+	public Result<Void> loadAll(String fileName) throws IOException {
+		List<Item> items = storage.loadAll(fileName);
+        // Replace current contents with loaded snapshot
+        repo.replaceAll(items);
+        return Result.ok();
+	}
 }
