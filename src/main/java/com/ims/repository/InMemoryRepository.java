@@ -1,5 +1,5 @@
-package com.ims.repository;
+// package com.ims.repository;
 
-public interface InMemoryRepository {
+// public interface InMemoryRepository {
 
-}
+// }
