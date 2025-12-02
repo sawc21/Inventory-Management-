@@ -114,65 +114,54 @@ public class Main {
             switch (choice) {
             
                 case "1": {
-                    // Add Item
                     System.out.println("\n-- Add Item --");
-
-
+                
                     System.out.print("Enter ID: ");
                     String id = scnr.nextLine();
-
-
+                
                     System.out.print("Enter Name: ");
                     String name = scnr.nextLine();
-                    
-                    //reset loopRunning variable
+                
+                    // Quantity input loop
                     loopRunning = true;
-                    
-                    //keeps asking for integer value until user provides one
                     while (loopRunning) {
-                    	//error handling for different data types
-                    	try {
-                    		System.out.print("Enter Quantity: ");
-                    		quantity = scnr.nextInt();
-                    		scnr.nextLine(); //flush newline from scanner, prevents skipping input
-                    		loopRunning = false; // end of continuous prompting if success
-                    	}
-                    	catch (InputMismatchException e) {
-                    		System.out.println("Quantity must be an integer value. Please try again.");
-                    		scnr.nextLine(); // clears bad token and new line character
-                    	}
+                        try {
+                            System.out.print("Enter Quantity: ");
+                            quantity = scnr.nextInt();
+                            scnr.nextLine();
+                            loopRunning = false;
+                        } catch (InputMismatchException e) {
+                            System.out.println("Quantity must be an integer value. Please try again.");
+                            scnr.nextLine();
+                        }
                     }
-                    
-                    //resets loop running back to true for use in price loop
+                
+                    // Price input loop
                     loopRunning = true;
-
-                    //keeps asking for double value until user provides one
                     while (loopRunning) {
-                    	//error handling for different data types
-                    	try {
-                    		System.out.print("Enter Price: ");
-                    		price = scnr.nextDouble();
-                    		loopRunning = false;
-                    		//catch newline character
-                    		scnr.nextLine();
-                    	}
-                    	catch (InputMismatchException e) {
-                    		System.out.println("Price must be a double value. Please try again.");
-                    		scnr.nextLine(); // clears bad token and new line character
-                    	}
+                        try {
+                            System.out.print("Enter Price: ");
+                            price = scnr.nextDouble();
+                            scnr.nextLine();
+                            loopRunning = false;
+                        } catch (InputMismatchException e) {
+                            System.out.println("Price must be a double value. Please try again.");
+                            scnr.nextLine();
+                        }
                     }
-
-
+                
                     System.out.print("Enter Supplier: ");
                     String supplier = scnr.nextLine();
-
-
+                
                     Item newItem = new Item(id, name, quantity, price, supplier);
-
-
-                    repo.save(newItem);  
-                    System.out.println("Item saved!");
-                    Thread.sleep(2000);
+                
+                    //Run save in a separate thread
+                    Thread addThread = new Thread(() -> {
+                        repo.save(newItem);
+                        System.out.println("Item saved!");
+                    });
+                    addThread.start();   // open thread
+                    addThread.join();    // wait until it closes (optional)
                     break;
                 }
 
@@ -211,18 +200,21 @@ public class Main {
 
 
                 case "4": {
-                    // Delete Item
                     System.out.println("\n-- Delete Item --");
                     System.out.print("Enter ID to delete: ");
                     String delId = scnr.nextLine();
-
-                    if (repo.existsById(delId)) {
-                        repo.deleteById(delId);
-                        System.out.println("Item deleted!");
-                    } else {
-                        System.out.println("No item with that ID exists.");
-                    }
-                    Thread.sleep(1000);
+                
+                    //Run delete in a separate thread
+                    Thread deleteThread = new Thread(() -> {
+                        if (repo.existsById(delId)) {
+                            repo.deleteById(delId);
+                            System.out.println("Item deleted!");
+                        } else {
+                            System.out.println("No item with that ID exists.");
+                        }
+                    });
+                    deleteThread.start();//opens thread
+                    deleteThread.join();//waits until it closes
                     break;
                 }
 
