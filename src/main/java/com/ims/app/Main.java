@@ -11,6 +11,12 @@ import java.io.File;
 import java.util.*;
 
 
+// 345, Apple Juice, 50x, 4.36, HEB
+// 576, Cookies, 5x, 1.36, Costco
+// 846, Frozen Chicken, 20x, 7.69, HEB
+
+
+
 public class Main {
 	//variable initialization to use across scopes
 	static String id, name, supplier;
