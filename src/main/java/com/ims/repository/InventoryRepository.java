@@ -17,4 +17,18 @@ public interface InventoryRepository {
     void deleteById(String id);
 
     void replaceAll(List<Item> items); // clear then add all
+    
+    void sortById(InventoryRepository repo);
+    
+    void sortByName(InventoryRepository repo);
+    
+    void sortByQuantityAscending(InventoryRepository repo);
+    
+    void sortByQuantityDescending(InventoryRepository repo);
+    
+    void sortByPriceAscending(InventoryRepository repo);
+    
+    void sortByPriceDescending(InventoryRepository repo);
+    
+    void sortBySupplier(InventoryRepository repo);
 }
