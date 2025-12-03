@@ -11,12 +11,6 @@ import java.io.File;
 import java.util.*;
 
 
-// 345, Apple Juice, 50x, 4.36, HEB
-// 576, Cookies, 5x, 1.36, Costco
-// 846, Frozen Chicken, 20x, 7.69, HEB
-
-
-
 public class Main {
 	//variable initialization to use across scopes
 	static String id, name, supplier;
@@ -70,24 +64,46 @@ public class Main {
                 for (Item it : items)
                     data.put(it.id(), it);
             }
+            
+            @Override
+            public void sortById(InventoryRepository repo) {
+            	List<Item> items = repo.findAll();
+            	
+            }
+            
+            @Override
+            public void sortByName(InventoryRepository repo) {
+            	
+            }
+            
+            @Override
+            public void sortByQuantityAscending(InventoryRepository repo) {
+            	
+            }
+            
+            @Override
+            public void sortByQuantityDescending(InventoryRepository repo) {
+            	
+            }
+            
+            @Override
+            public void sortByPriceAscending(InventoryRepository repo) {
+            	
+            }
+            
+            @Override
+            public void sortByPriceDescending(InventoryRepository repo) {
+            	
+            }
+            
+            @Override
+            public void sortBySupplier(InventoryRepository repo) {
+            	
+            }
         };
 
-
         // Temporary stub file storage
-        CsvInventoryStorage storage = new CsvInventoryStorage(); /* {
-            @Override
-            public java.util.List<Item> loadAll(String fileName) {
-                System.out.println("[DEBUG] Loading items (stubbed)");
-                return java.util.List.of();
-            }
-
-
-            @Override
-            public void saveAll(java.util.List<Item> items, String fileName) {
-                System.out.println("[DEBUG] Saving " + items.size() + " items (stubbed)");
-            }
-        }; */
-
+        CsvInventoryStorage storage = new CsvInventoryStorage();
 
         // Simple low-stock rule: quantity < 10
         InventoryService.LowStockPolicy policy = item -> item != null && item.getQuantity() < 10;
@@ -95,7 +111,6 @@ public class Main {
 
         // Build service
         InventoryService service = new InventoryServiceImpl(repo, storage, policy);
-
 
         Scanner scnr = new Scanner(System.in);
 
@@ -120,54 +135,65 @@ public class Main {
             switch (choice) {
             
                 case "1": {
+                    // Add Item
                     System.out.println("\n-- Add Item --");
-                
+
+
                     System.out.print("Enter ID: ");
                     String id = scnr.nextLine();
-                
+
+
                     System.out.print("Enter Name: ");
                     String name = scnr.nextLine();
-                
-                    // Quantity input loop
+                    
+                    //reset loopRunning variable
                     loopRunning = true;
+                    
+                    //keeps asking for integer value until user provides one
                     while (loopRunning) {
-                        try {
-                            System.out.print("Enter Quantity: ");
-                            quantity = scnr.nextInt();
-                            scnr.nextLine();
-                            loopRunning = false;
-                        } catch (InputMismatchException e) {
-                            System.out.println("Quantity must be an integer value. Please try again.");
-                            scnr.nextLine();
-                        }
+                    	//error handling for different data types
+                    	try {
+                    		System.out.print("Enter Quantity: ");
+                    		quantity = scnr.nextInt();
+                    		scnr.nextLine(); //flush newline from scanner, prevents skipping input
+                    		loopRunning = false; // end of continuous prompting if success
+                    	}
+                    	catch (InputMismatchException e) {
+                    		System.out.println("Quantity must be an integer value. Please try again.");
+                    		scnr.nextLine(); // clears bad token and new line character
+                    	}
                     }
-                
-                    // Price input loop
+                    
+                    //resets loop running back to true for use in price loop
                     loopRunning = true;
+
+                    //keeps asking for double value until user provides one
                     while (loopRunning) {
-                        try {
-                            System.out.print("Enter Price: ");
-                            price = scnr.nextDouble();
-                            scnr.nextLine();
-                            loopRunning = false;
-                        } catch (InputMismatchException e) {
-                            System.out.println("Price must be a double value. Please try again.");
-                            scnr.nextLine();
-                        }
+                    	//error handling for different data types
+                    	try {
+                    		System.out.print("Enter Price: ");
+                    		price = scnr.nextDouble();
+                    		loopRunning = false;
+                    		//catch newline character
+                    		scnr.nextLine();
+                    	}
+                    	catch (InputMismatchException e) {
+                    		System.out.println("Price must be a double value. Please try again.");
+                    		scnr.nextLine(); // clears bad token and new line character
+                    	}
                     }
-                
+
+
                     System.out.print("Enter Supplier: ");
                     String supplier = scnr.nextLine();
-                
+
+
                     Item newItem = new Item(id, name, quantity, price, supplier);
-                
-                    //Run save in a separate thread
-                    Thread addThread = new Thread(() -> {
-                        repo.save(newItem);
-                        System.out.println("Item saved!");
-                    });
-                    addThread.start();   // open thread
-                    addThread.join();    // wait until it closes (optional)
+
+
+                    repo.save(newItem);  
+                    System.out.println("Item saved!");
+                    Thread.sleep(2000);
                     break;
                 }
 
@@ -182,7 +208,10 @@ public class Main {
                         items.forEach(System.out::println);
                     }
 					System.out.println("\n-- Low Stock --");
-					System.out.println(service.lowStock());
+					//iterate through low stock items and display them
+					for (Item item : service.lowStock()) {
+						System.out.print(item +"\n");
+					}
                     Thread.sleep(1000);
                     break;
                 }
@@ -206,21 +235,18 @@ public class Main {
 
 
                 case "4": {
+                    // Delete Item
                     System.out.println("\n-- Delete Item --");
                     System.out.print("Enter ID to delete: ");
                     String delId = scnr.nextLine();
-                
-                    //Run delete in a separate thread
-                    Thread deleteThread = new Thread(() -> {
-                        if (repo.existsById(delId)) {
-                            repo.deleteById(delId);
-                            System.out.println("Item deleted!");
-                        } else {
-                            System.out.println("No item with that ID exists.");
-                        }
-                    });
-                    deleteThread.start();//opens thread
-                    deleteThread.join();//waits until it closes
+
+                    if (repo.existsById(delId)) {
+                        repo.deleteById(delId);
+                        System.out.println("Item deleted!");
+                    } else {
+                        System.out.println("No item with that ID exists.");
+                    }
+                    Thread.sleep(1000);
                     break;
                 }
 
@@ -229,6 +255,9 @@ public class Main {
                     // Replace Entire Inventory
                     System.out.println("\n-- Replace All Items --");
                     System.out.println("How many items do you want to add?");
+                    
+                    //reset loop variable
+                    loopRunning = true;
                     
                     //keep prompting user to enter an integer, otherwise display error
                     while (loopRunning) {
@@ -258,7 +287,10 @@ public class Main {
 
                         System.out.print("Enter Name: ");
                         String name = scnr.nextLine();
-                        
+                      
+                      //reset loop variable
+                      loopRunning = true;
+                      
                       //keeps asking for integer value until user provides one
                         while (loopRunning) {
                         	//error handling for different data types
