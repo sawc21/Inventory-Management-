@@ -87,7 +87,7 @@ public record Item(
 
     @Override
     public String toString() {
-        return String.format("Item{id='%s', name='%s', qty=%d, price=%s, supplier='%s'}",
+        return String.format("Item id = %s, name = %s, qty = %d, price = %s, supplier = %s",
                 id, name, quantity, price, supplier);
     }
 }
