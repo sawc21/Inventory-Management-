@@ -19,6 +19,8 @@ public class CsvInventoryStorage implements InventoryFileStorage {
 	public List<Item> loadAll(String fileName) throws IOException {
 		//create a new empty list object
         List<Item> items = new ArrayList<>();
+        int lineCount = 0;
+        
         //try-with-resources to auto-close the file when finished reading
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
         	//skip the header line
@@ -30,15 +32,19 @@ public class CsvInventoryStorage implements InventoryFileStorage {
                 String[] properties = line.split(",");
                 Item item = new Item(properties[0], properties[1], Integer.parseInt(properties[2]), Double.parseDouble(properties[3]), properties[4]);
                 items.add(item);
+                //add to total lines read
+            	lineCount++;
             }
         }
         catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("[DEBUG] Successfully loaded" + lineCount + "items!");
         return items;
 	}
 	@Override
 	public void saveAll(List<Item> items, String fileName) throws IOException {
+		System.out.println("[DEBUG] Saving " + items.size() + " items (stubbed)");
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
 			writer.write("ID, Name, Quantity, Price, Supplier\n");
 			for (Item item1 : items) {
@@ -49,5 +55,6 @@ public class CsvInventoryStorage implements InventoryFileStorage {
         catch (IOException e) {
             e.printStackTrace();
         }
+		System.out.println("[DEBUG] Successfully saved all items!");
 	}
 }
